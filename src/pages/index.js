@@ -1,7 +1,7 @@
 import Head from "next/head";
 import { getSession, useSession } from "next-auth/react";
 import Login from "@/components/Login";
-
+import Navbar from "@/components/Navbar";
 export default function Home() {
   const { data: session } = useSession();
 
@@ -17,7 +17,7 @@ export default function Home() {
       </Head>
 
       <main >
-        we are in the session
+       <Navbar/>
       </main>
     </>
   );
