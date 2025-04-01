@@ -1,48 +1,59 @@
-import React, { useRef } from "react";
-import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
+import { useEffect, useRef, useState } from "react";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import Thumbnail from "./Thumbnail";
 
-const Row = ({ title, movies }) => {
+const Row = ({ title, movies = [] }) => {
   const rowRef = useRef(null);
+  const [isMoved, setIsMoved] = useState(false);
 
   const handleClick = (direction) => {
+    setIsMoved(true);
     if (rowRef.current) {
       const { scrollLeft, clientWidth } = rowRef.current;
-
       const scrollTo =
         direction === "left"
           ? scrollLeft - clientWidth
           : scrollLeft + clientWidth;
-
       rowRef.current.scrollTo({ left: scrollTo, behavior: "smooth" });
     }
   };
 
+  if (!movies) return <div>Loading...</div>;
+
   return (
-    <div className="space-y-0.5 md:space-y-2">
-      <h2 className="w-56 mt-6 cursor-pointer text-sm font-semibold text-[#e5e5e5] transition duration-200 hover:text-white md:text-2xl">
+    <div className="h-40 space-y-0.5 md:space-y-2">
+      <h2 className="w-56 cursor-pointer text-sm font-semibold text-[#e5e5e5] transition duration-200 hover:text-white md:text-2xl">
         {title}
       </h2>
-
-      <div className="group relative md:ml-2">
-        <BiChevronLeft
-          className="absolute top-0 bottom-0 left-2 z-40 m-auto h-9 w-9 cursor-pointer opacity-0 transition hover:scale-125 group-hover:opacity-100"
-          onClick={() => handleClick("left")}
-        />
+      <div className="group relative md:-ml-2">
+        {movies.length > 0 && (
+          <ChevronLeftIcon
+            className={`absolute top-0 bottom-0 left-2 z-40 m-auto h-9 w-9 cursor-pointer opacity-0 transition hover:scale-125 group-hover:opacity-100 ${
+              !isMoved && "hidden"
+            }`}
+            onClick={() => handleClick("left")}
+          />
+        )}
 
         <div
-          className="flex items-center space-x-0.5 scrollbar-hide overflow-x-scroll md:space-x-2.5 md:p-2"
           ref={rowRef}
+          className="flex items-center space-x-0.5 overflow-x-scroll scrollbar-hide md:space-x-2.5 md:p-2"
         >
-          {movies.map((movie) => (
-            <Thumbnail key={movie.id} movie={movie} />
-          ))}
+          {movies.length > 0 ? (
+            movies.map((movie) => (
+              <Thumbnail key={movie.id} movie={movie} />
+            ))
+          ) : (
+            <div className="text-white text-sm">No content available</div>
+          )}
         </div>
 
-        <BiChevronRight
-          className="absolute top-0 bottom-0 right-2 z-40 m-auto h-9 w-9 cursor-pointer opacity-0 transition hover:scale-125 group-hover:opacity-100"
-          onClick={() => handleClick("right")}
-        />
+        {movies.length > 0 && (
+          <ChevronRightIcon
+            className="absolute top-0 bottom-0 right-2 z-40 m-auto h-9 w-9 cursor-pointer opacity-0 transition hover:scale-125 group-hover:opacity-100"
+            onClick={() => handleClick("right")}
+          />
+        )}
       </div>
     </div>
   );
