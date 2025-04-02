@@ -4,7 +4,8 @@ import Logo from "./Logo";
 import Image from "next/image";
 import { AiOutlineLogout } from "react-icons/ai";
 import { BiSearch } from "react-icons/bi";
-import { BsBellFill } from "react-icons/bs";
+import { CgProfile } from "react-icons/cg";
+import { FaSignOutAlt } from "react-icons/fa";
 import { signOut } from "next-auth/react";
 
 const Navbar = () => {
@@ -37,10 +38,9 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center space-x-4 text-sm font-light">
-          <BiSearch className="sm hidden h-6 w-6 sm:inline" />
-          <p className="hidden lg:inline">Kids</p>
-          <BsBellFill className="h-6 w-6" />
-           <AiOutlineLogout className="cursor-pointer rounded w-auto h-auto"
+          <BiSearch className="sm hidden h-6 w-6 sm:inline cursor-pointer" />
+          <CgProfile className="h-6 w-6 cursor-pointer" />
+           <FaSignOutAlt className="cursor-pointer rounded w-auto h-auto front-s"
            onClick={() => signOut()}/>
             
         </div>
