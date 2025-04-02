@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import Navbar from '@/components/Navbar';
 import Head from 'next/head';
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 const Account = () => {
   const { data: session, status } = useSession();
@@ -79,10 +80,12 @@ const Account = () => {
             </h2>
             <div className="space-y-4">
               <div className="flex items-center space-x-4 pb-4 border-b border-gray-600">
-                <img
+                <Image
                   src={session.user.image || "/images/default-avatar.png"}
                   alt="Profile"
-                  className="w-12 h-12 rounded-md"
+                  width={48}
+                  height={48}
+                  className="rounded-md"
                 />
                 <div>
                   <p className="text-white">{session.user.name}</p>

@@ -1,10 +1,14 @@
-import React from "react";
+import Image from 'next/image';
+
 const Logo = ({ style }) => {
   return (
-    <img 
-      src="\gologo.svg" 
-      alt="Your Brand Logo" 
+    <Image
+      src="/gologo.png"
+      alt="Goojera"
+      width={100}
+      height={50}
       className={style}
+      priority
     />
   );
 };

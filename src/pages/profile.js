@@ -4,6 +4,7 @@ import Navbar from '@/components/Navbar';
 import Head from 'next/head';
 import { useState, useEffect } from 'react';
 import { FaHistory, FaHeart, FaBookmark, FaStar } from 'react-icons/fa';
+import Image from 'next/image';
 
 const Profile = () => {
   const { data: session, status } = useSession();
@@ -73,10 +74,12 @@ const Profile = () => {
           <div className="bg-[#141414] rounded-lg p-6 mb-8">
             <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">
               <div className="relative group">
-                <img
+                <Image
                   src={session.user.image || "/images/default-avatar.png"}
                   alt="Profile"
-                  className="w-32 h-32 rounded-full object-cover"
+                  width={128}
+                  height={128}
+                  className="rounded-full object-cover"
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                   <span className="text-white text-sm">Change Photo</span>

@@ -13,7 +13,7 @@ const Help = () => {
       questions: [
         {
           q: "How do I create an account?",
-          a: "To create an account, click the 'Sign Up' button in the top right corner. Follow the prompts to enter your email, create a password, and choose your subscription plan."
+          a: "To create an account, click the &apos;Sign Up&apos; button in the top right corner. Follow the prompts to enter your email, create a password, and choose your subscription plan."
         },
         {
           q: "What are the different subscription plans?",

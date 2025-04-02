@@ -120,11 +120,19 @@ const Navbar = () => {
       <div className="container flex justify-between">
         <div className="flex items-center space-x-2 md:space-x-10">
           <Link href="/">
-            <Logo style="h-auto w-[100px]" />
+            <Image
+              src="/gologo.svg"
+              alt="Goojera"
+              width={200}
+              height={200}
+              className="h-11 md:h-10 cursor-pointer"
+              onClick={() => router.push('/')}
+              priority
+            />
           </Link>
 
-          <ul className="hidden space-x-4 md:flex">
-            <li className="headerLink cursor-pointer font-semibold text-white hover:text-white">
+          <ul className="hidden space-x-4 md:flex ">
+            <li className="headerLink cursor-pointer font-semibold text-gray ">
               <Link href="/">Home</Link>
             </li>
 
@@ -284,10 +292,12 @@ const Navbar = () => {
               className="flex items-center cursor-pointer"
               onClick={() => setShowMenu(!showMenu)}
             >
-              <img
+              <Image
                 src={session?.user?.image || "/images/default-avatar.png"}
                 alt="Profile"
-                className="rounded-full h-8 w-8"
+                width={32}
+                height={32}
+                className="rounded-full"
               />
             </div>
             
