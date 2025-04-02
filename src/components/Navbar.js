@@ -7,13 +7,46 @@ import { BiSearch } from "react-icons/bi";
 import { CgProfile } from "react-icons/cg";
 import { signOut } from "next-auth/react";
 import { IoSettingsOutline } from "react-icons/io5";
+import { useRouter } from 'next/router';
+import { useSession } from 'next-auth/react';
+import { BsBellFill } from 'react-icons/bs';
+import { FaCircle, FaTrash } from 'react-icons/fa';
 
 const Navbar = () => {
+  const router = useRouter();
+  const { data: session, status } = useSession();
   const [isScrolled, setIsScrolled] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+
+  // Sample notifications - in a real app, this would come from your backend
+  const [notifications, setNotifications] = useState([
+    {
+      id: 1,
+      title: "New Movie Added",
+      message: "Watch 'The Latest Blockbuster' now!",
+      time: "2 hours ago",
+      isNew: true,
+    },
+    {
+      id: 2,
+      title: "Continue Watching",
+      message: "Continue where you left off in 'Popular Series'",
+      time: "1 day ago",
+      isNew: true,
+    },
+    {
+      id: 3,
+      title: "Subscription Update",
+      message: "Your premium subscription will renew soon",
+      time: "3 days ago",
+      isNew: false,
+    }
+  ]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -49,8 +82,41 @@ const Navbar = () => {
     }
   };
 
+  const handleNavigation = (path) => {
+    setShowMenu(false);
+    router.push(path);
+  };
+
+  const handleSignOut = async () => {
+    try {
+      setShowMenu(false);
+      await signOut({ redirect: false });
+      localStorage.removeItem('next-auth.session-token');
+      sessionStorage.clear();
+      router.push('/login');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
+  const handleNotificationClick = () => {
+    setShowNotifications(!showNotifications);
+    setShowMenu(false); // Close profile menu if open
+  };
+
+  const clearNotification = (id) => {
+    setNotifications(notifications.filter(notif => notif.id !== id));
+  };
+
+  const markAllAsRead = () => {
+    setNotifications(notifications.map(notif => ({
+      ...notif,
+      isNew: false
+    })));
+  };
+
   return (
-    <nav className={`${isScrolled && "bg-[#141414]"}`}>
+    <nav className={`${isScrolled && "bg-[#141414]"} fixed top-0 z-50 w-full transition-all duration-500 ease-in-out`}>
       <div className="container flex justify-between">
         <div className="flex items-center space-x-2 md:space-x-10">
           <Link href="/">
@@ -143,58 +209,144 @@ const Navbar = () => {
             )}
           </div>
           
+          {/* Notifications Bell */}
           <div className="relative">
-            <CgProfile 
-              className="h-6 w-6 cursor-pointer"
-              onClick={() => setShowProfileMenu(!showProfileMenu)}
-            />
-            
-            {/* Profile Dropdown Menu */}
-            {showProfileMenu && (
-              <div className="absolute right-0 top-8 w-48 bg-[#141414] border border-gray-700 rounded-md shadow-lg z-50">
-                <div className="py-1">
-                  {/* Profile Section */}
-                  <div className="px-4 py-3 border-b border-gray-700">
-                    <p className="text-sm text-white">Signed in as</p>
-                    <p className="text-sm font-medium text-gray-300 truncate">
-                      user@example.com
-                    </p>
-                  </div>
+            <div className="relative cursor-pointer" onClick={handleNotificationClick}>
+              <BsBellFill className="h-6 w-6" />
+              {notifications.some(n => n.isNew) && (
+                <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-600 rounded-full" />
+              )}
+            </div>
 
-                  {/* Menu Items */}
-                  <Link 
-                    href="/profile"
-                    className=" px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 flex items-center"
-                    onClick={() => setShowProfileMenu(false)}
-                  >
-                    <CgProfile className="mr-2 h-5 w-5" />
-                    Profile
-                  </Link>
-
-                  <Link 
-                    href="/settings"
-                    className=" px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 flex items-center"
-                    onClick={() => setShowProfileMenu(false)}
-                  >
-                    <IoSettingsOutline className="mr-2 h-5 w-5" />
-                    Settings
-                  </Link>
-
-                  {/* Divider */}
-                  <div className="border-t border-gray-700 my-1"></div>
-
-                  {/* Sign Out Button */}
-                  <button
-                    onClick={() => {
-                      setShowProfileMenu(false);
-                      signOut();
-                    }}
-                    className=" w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 flex items-center"
-                  >
-                    <AiOutlineLogout className="mr-2 h-5 w-5" />
-                    Sign Out
-                  </button>
+            {/* Notifications Dropdown */}
+            {showNotifications && (
+              <div className="absolute right-0 mt-2 w-80 bg-black border border-gray-700 rounded-md shadow-lg py-2 max-h-96 overflow-y-auto">
+                <div className="flex justify-between items-center px-4 py-2 border-b border-gray-700">
+                  <h3 className="text-white font-semibold">Notifications</h3>
+                  {notifications.some(n => n.isNew) && (
+                    <button
+                      onClick={markAllAsRead}
+                      className="text-sm text-blue-500 hover:text-blue-400"
+                    >
+                      Mark all as read
+                    </button>
+                  )}
                 </div>
+                
+                {notifications.length > 0 ? (
+                  <div className="divide-y divide-gray-700">
+                    {notifications.map((notification) => (
+                      <div
+                        key={notification.id}
+                        className="px-4 py-3 hover:bg-gray-800 transition-colors relative group"
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-start space-x-2">
+                            {notification.isNew && (
+                              <FaCircle className="text-red-600 w-2 h-2 mt-2" />
+                            )}
+                            <div>
+                              <p className="text-white font-medium">
+                                {notification.title}
+                              </p>
+                              <p className="text-gray-400 text-sm">
+                                {notification.message}
+                              </p>
+                              <p className="text-gray-500 text-xs mt-1">
+                                {notification.time}
+                              </p>
+                            </div>
+                          </div>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              clearNotification(notification.id);
+                            }}
+                            className="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <FaTrash className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="px-4 py-6 text-center text-gray-400">
+                    No notifications
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+          
+          <div className="relative">
+            <div
+              className="flex items-center cursor-pointer"
+              onClick={() => setShowMenu(!showMenu)}
+            >
+              <img
+                src={session?.user?.image || "/images/default-avatar.png"}
+                alt="Profile"
+                className="rounded-full h-8 w-8"
+              />
+            </div>
+            
+            {showMenu && (
+              <div className="absolute right-0 top-10 bg-black border border-gray-700 rounded-md shadow-lg py-2 w-48">
+                {status === "authenticated" && session ? (
+                  <>
+                    <div className="px-4 py-2 text-gray-300">
+                      {session.user?.name || 'User'}
+                    </div>
+                    <hr className="border-gray-700" />
+                    <button
+                      onClick={() => handleNavigation('/profile')}
+                      className="block w-full text-left px-4 py-2 text-white hover:bg-gray-800"
+                    >
+                      Profile
+                    </button>
+                    <button
+                      onClick={() => handleNavigation('/settings')}
+                      className="block w-full text-left px-4 py-2 text-white hover:bg-gray-800"
+                    >
+                      Setting
+                    </button>
+                    <button
+                      onClick={() => handleNavigation('/account')}
+                      className="block w-full text-left px-4 py-2 text-white hover:bg-gray-800"
+                    >
+                      Account
+                    </button>
+                    <button
+                      onClick={() => handleNavigation('/help')}
+                      className="block w-full text-left px-4 py-2 text-white hover:bg-gray-800"
+                    >
+                      Help Center
+                    </button>
+                    <hr className="border-gray-700" />
+                    <button
+                      onClick={handleSignOut}
+                      className="block w-full text-left px-4 py-2 text-white hover:bg-gray-800"
+                    >
+                      Sign Out
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => handleNavigation('/login')}
+                      className="block w-full text-left px-4 py-2 text-white hover:bg-gray-800"
+                    >
+                      Sign In
+                    </button>
+                    <button
+                      onClick={() => handleNavigation('/signup')}
+                      className="block w-full text-left px-4 py-2 text-white hover:bg-gray-800"
+                    >
+                      Sign Up
+                    </button>
+                  </>
+                )}
               </div>
             )}
           </div>
