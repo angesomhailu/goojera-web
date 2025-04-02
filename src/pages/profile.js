@@ -1,190 +1,127 @@
-import Navbar from "@/components/Navbar";
-import { useSession } from "next-auth/react";
-import Image from "next/image";
-import { useState } from "react";
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
+import Navbar from '@/components/Navbar';
+import Head from 'next/head';
+import { useState } from 'react';
 
 const Profile = () => {
   const { data: session } = useSession();
-  const [activeTab, setActiveTab] = useState("profile");
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState('watchlist');
 
-  // Placeholder user data - replace with actual user data from your backend
-  const userData = {
-    name: session?.user?.name || "User Name",
-    email: session?.user?.email || "user@example.com",
-    plan: "Premium",
-    joinDate: "January 2024",
-    preferences: {
-      language: "English",
-      maturityRating: "Adult",
-      autoplayNext: true,
-      autoplayPreviews: true,
+  // Redirect if not logged in
+  if (!session) {
+    router.push('/Login');
+    return null;
+  }
+
+  const tabs = {
+    watchlist: {
+      title: "My Watchlist",
+      content: [] // Your watchlist data here
+    },
+    history: {
+      title: "Watch History",
+      content: [] // Your watch history data here
+    },
+    ratings: {
+      title: "My Ratings",
+      content: [] // Your ratings data here
     }
   };
 
   return (
-    <div className="relative h-screen bg-gradient-to-b from-gray-900/10 to-[#010511] lg:h-[140vh]">
+    <div className="relative min-h-screen bg-gradient-to-b from-gray-900/10 to-[#010511]">
+      <Head>
+        <title>Profile - Goojera</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+
       <Navbar />
-      <main className="relative px-4 pb-24 lg:space-y-24 lg:px-16">
-        <div className="md:space-y-8">
-          <h1 className="text-2xl md:text-4xl font-bold text-white pt-24">Profile</h1>
 
-          {/* Profile Content */}
-          <div className="mt-8 bg-[#141414] rounded-md p-6 max-w-4xl">
-            {/* Profile Header */}
-            <div className="flex items-center space-x-6 pb-6 border-b border-gray-700">
-              <div className="relative w-24 h-24 rounded-full overflow-hidden">
-                {session?.user?.image ? (
-                  <Image
-                    src={session.user.image}
-                    alt="Profile"
-                    layout="fill"
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gray-600 flex items-center justify-center">
-                    <span className="text-4xl text-white">
-                      {userData.name.charAt(0)}
-                    </span>
+      <main className="relative px-4 pb-24 lg:space-y-24 lg:px-16 pt-20">
+        <div className="max-w-6xl mx-auto">
+          {/* Profile Header */}
+          <div className="flex items-center space-x-6 mb-8">
+            <img
+              src={session.user.image || "/images/default-avatar.png"}
+              alt="Profile"
+              className="w-24 h-24 rounded-full"
+            />
+            <div>
+              <h1 className="text-3xl font-bold text-white">
+                {session.user.name || 'User Profile'}
+              </h1>
+              <p className="text-gray-400">{session.user.email}</p>
+              <button className="mt-2 text-sm text-blue-500 hover:underline">
+                Edit Profile
+              </button>
+            </div>
+          </div>
+
+          {/* Profile Stats */}
+          <div className="grid grid-cols-3 gap-4 mb-8">
+            <div className="bg-[#141414] rounded-md p-4 text-center">
+              <p className="text-2xl font-bold text-white">0</p>
+              <p className="text-gray-400">Watchlist</p>
+            </div>
+            <div className="bg-[#141414] rounded-md p-4 text-center">
+              <p className="text-2xl font-bold text-white">0</p>
+              <p className="text-gray-400">Watched</p>
+            </div>
+            <div className="bg-[#141414] rounded-md p-4 text-center">
+              <p className="text-2xl font-bold text-white">0</p>
+              <p className="text-gray-400">Reviews</p>
+            </div>
+          </div>
+
+          {/* Tabs */}
+          <div className="border-b border-gray-600">
+            <nav className="flex space-x-8">
+              {Object.keys(tabs).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`py-4 px-1 relative ${
+                    activeTab === tab
+                      ? 'text-white'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  {tabs[tab].title}
+                  {activeTab === tab && (
+                    <span className="absolute bottom-0 left-0 w-full h-1 bg-red-600" />
+                  )}
+                </button>
+              ))}
+            </nav>
+          </div>
+
+          {/* Tab Content */}
+          <div className="mt-8">
+            {tabs[activeTab].content.length > 0 ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {tabs[activeTab].content.map((item) => (
+                  <div key={item.id} className="relative h-48 cursor-pointer">
+                    {/* Content items */}
                   </div>
-                )}
+                ))}
               </div>
-              <div>
-                <h2 className="text-2xl font-bold text-white">{userData.name}</h2>
-                <p className="text-gray-400">{userData.email}</p>
-                <p className="text-sm text-gray-500 mt-1">
-                  Member since {userData.joinDate}
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-gray-400">
+                  {activeTab === 'watchlist'
+                    ? "Your watchlist is empty. Add some titles to watch later!"
+                    : activeTab === 'history'
+                    ? "You haven't watched any titles yet."
+                    : "You haven't rated any titles yet."}
                 </p>
-              </div>
-            </div>
-
-            {/* Navigation Tabs */}
-            <div className="flex space-x-4 mt-6 border-b border-gray-700">
-              <button
-                className={`pb-4 px-2 text-sm font-medium ${
-                  activeTab === "profile"
-                    ? "text-white border-b-2 border-red-600"
-                    : "text-gray-400 hover:text-white"
-                }`}
-                onClick={() => setActiveTab("profile")}
-              >
-                Profile & Settings
-              </button>
-              <button
-                className={`pb-4 px-2 text-sm font-medium ${
-                  activeTab === "billing"
-                    ? "text-white border-b-2 border-red-600"
-                    : "text-gray-400 hover:text-white"
-                }`}
-                onClick={() => setActiveTab("billing")}
-              >
-                Billing Details
-              </button>
-            </div>
-
-            {/* Profile Content */}
-            {activeTab === "profile" && (
-              <div className="mt-6 space-y-6">
-                {/* Membership & Billing */}
-                <div className="space-y-4">
-                  <h3 className="text-xl font-medium text-white">
-                    Membership & Billing
-                  </h3>
-                  <div className="bg-gray-800 p-4 rounded-md">
-                    <p className="text-gray-300">
-                      Current Plan: <span className="text-white font-medium">{userData.plan}</span>
-                    </p>
-                  </div>
-                </div>
-
-                {/* Profile Settings */}
-                <div className="space-y-4">
-                  <h3 className="text-xl font-medium text-white">
-                    Profile Settings
-                  </h3>
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p className="text-gray-300">Language</p>
-                        <p className="text-sm text-gray-500">
-                          {userData.preferences.language}
-                        </p>
-                      </div>
-                      <button className="text-blue-400 hover:underline">
-                        Change
-                      </button>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p className="text-gray-300">Maturity Rating</p>
-                        <p className="text-sm text-gray-500">
-                          {userData.preferences.maturityRating}
-                        </p>
-                      </div>
-                      <button className="text-blue-400 hover:underline">
-                        Edit
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Playback Settings */}
-                <div className="space-y-4">
-                  <h3 className="text-xl font-medium text-white">
-                    Playback Settings
-                  </h3>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-gray-300">Autoplay next episode</p>
-                        <p className="text-sm text-gray-500">
-                          Play the next episode automatically
-                        </p>
-                      </div>
-                      <label className="relative inline-flex items-center cursor-pointer">
-                        <input
-                          type="checkbox"
-                          className="sr-only peer"
-                          checked={userData.preferences.autoplayNext}
-                          onChange={() => {}}
-                        />
-                        <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
-                      </label>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-gray-300">Autoplay previews</p>
-                        <p className="text-sm text-gray-500">
-                          Play previews while browsing
-                        </p>
-                      </div>
-                      <label className="relative inline-flex items-center cursor-pointer">
-                        <input
-                          type="checkbox"
-                          className="sr-only peer"
-                          checked={userData.preferences.autoplayPreviews}
-                          onChange={() => {}}
-                        />
-                        <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Billing Content */}
-            {activeTab === "billing" && (
-              <div className="mt-6 space-y-6">
-                <div className="space-y-4">
-                  <h3 className="text-xl font-medium text-white">
-                    Billing Information
-                  </h3>
-                  <div className="bg-gray-800 p-4 rounded-md">
-                    <p className="text-gray-300">
-                      Your next billing date is <span className="text-white font-medium">February 1, 2024</span>
-                    </p>
-                  </div>
-                </div>
+                <button
+                  onClick={() => router.push('/')}
+                  className="mt-4 bg-red-600 text-white px-6 py-2 rounded-md hover:bg-red-700"
+                >
+                  Browse Titles
+                </button>
               </div>
             )}
           </div>

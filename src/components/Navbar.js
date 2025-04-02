@@ -4,9 +4,7 @@ import Logo from "./Logo";
 import Image from "next/image";
 import { AiOutlineLogout } from "react-icons/ai";
 import { BiSearch } from "react-icons/bi";
-import { BsBellFill } from "react-icons/bs";
 import { CgProfile } from "react-icons/cg";
-import { FaSignOutAlt } from "react-icons/fa";
 import { signOut } from "next-auth/react";
 import { IoSettingsOutline } from "react-icons/io5";
 
@@ -166,7 +164,7 @@ const Navbar = () => {
                   {/* Menu Items */}
                   <Link 
                     href="/profile"
-                    className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 flex items-center"
+                    className=" px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 flex items-center"
                     onClick={() => setShowProfileMenu(false)}
                   >
                     <CgProfile className="mr-2 h-5 w-5" />
@@ -175,7 +173,7 @@ const Navbar = () => {
 
                   <Link 
                     href="/settings"
-                    className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 flex items-center"
+                    className=" px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 flex items-center"
                     onClick={() => setShowProfileMenu(false)}
                   >
                     <IoSettingsOutline className="mr-2 h-5 w-5" />
@@ -191,7 +189,7 @@ const Navbar = () => {
                       setShowProfileMenu(false);
                       signOut();
                     }}
-                    className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 flex items-center"
+                    className=" w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 flex items-center"
                   >
                     <AiOutlineLogout className="mr-2 h-5 w-5" />
                     Sign Out
