@@ -123,9 +123,9 @@ const Navbar = () => {
             <Image
               src="/gologo.svg"
               alt="Goojera"
-              width={200}
-              height={200}
-              className="h-11 md:h-10 cursor-pointer"
+              width={100}
+              height={28}
+              className="h-5 md:h-7 cursor-pointer"
               onClick={() => router.push('/')}
               priority
             />
@@ -288,18 +288,14 @@ const Navbar = () => {
           </div>
           
           <div className="relative">
-            <div
-              className="flex items-center cursor-pointer"
+            <Image
+              src={session?.user?.image || "/default-avatar.png"}
+              alt="Profile"
+              width={32}
+              height={32}
+              className="rounded-full cursor-pointer"
               onClick={() => setShowMenu(!showMenu)}
-            >
-              <Image
-                src={session?.user?.image || "/images/default-avatar.png"}
-                alt="Profile"
-                width={32}
-                height={32}
-                className="rounded-full"
-              />
-            </div>
+            />
             
             {showMenu && (
               <div className="absolute right-0 top-10 bg-black border border-gray-700 rounded-md shadow-lg py-2 w-48">
