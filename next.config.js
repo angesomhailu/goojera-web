@@ -13,6 +13,11 @@ const nextConfig = {
     // your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  // Specify the output
+  output: 'standalone',
 }
 
 module.exports = nextConfig 

@@ -10,21 +10,28 @@ const Profile = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('watchlist');
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     if (status === "unauthenticated") {
       router.push('/login');
     }
   }, [status, router]);
 
+  // Don't render anything until component is mounted
+  if (!mounted) return null;
+
+  // Show loading state while checking session
   if (status === "loading") {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-red-600"></div>
       </div>
     );
   }
 
+  // Don't render protected content for non-authenticated users
   if (!session) {
     return null;
   }
@@ -62,7 +69,7 @@ const Profile = () => {
   return (
     <div className="relative min-h-screen bg-gradient-to-b from-gray-900/10 to-[#010511]">
       <Head>
-        <title>{session.user.name} - Profile - Goojera</title>
+        <title>Profile - Goojera</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
@@ -166,5 +173,12 @@ const Profile = () => {
     </div>
   );
 };
+
+// Add this to prevent static page generation
+export const getServerSideProps = async (context) => {
+  return {
+    props: {}
+  }
+}
 
 export default Profile; 
