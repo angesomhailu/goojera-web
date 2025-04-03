@@ -6,23 +6,18 @@ import { useState, useEffect } from 'react';
 import { FaHistory, FaHeart, FaBookmark, FaStar } from 'react-icons/fa';
 import Image from 'next/image';
 
-const Profile = () => {
+// Create a client-side only component
+const ProfileContent = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('watchlist');
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
     if (status === "unauthenticated") {
       router.push('/login');
     }
   }, [status, router]);
 
-  // Don't render anything until component is mounted
-  if (!mounted) return null;
-
-  // Show loading state while checking session
   if (status === "loading") {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -31,7 +26,6 @@ const Profile = () => {
     );
   }
 
-  // Don't render protected content for non-authenticated users
   if (!session) {
     return null;
   }
@@ -174,11 +168,30 @@ const Profile = () => {
   );
 };
 
-// Add this to prevent static page generation
-export const getServerSideProps = async (context) => {
-  return {
-    props: {}
+// Main page component with dynamic import
+const Profile = () => {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-red-600"></div>
+      </div>
+    );
   }
+
+  return <ProfileContent />;
+};
+
+// Force server-side rendering
+export async function getServerSideProps(context) {
+  return {
+    props: {},
+  };
 }
 
 export default Profile; 

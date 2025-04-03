@@ -18,6 +18,21 @@ const nextConfig = {
   },
   // Specify the output
   output: 'standalone',
+  // Disable static optimization for auth pages
+  experimental: {
+    appDir: false,
+  },
+  // Add custom webpack config to handle client-side only code
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.resolve.fallback = {
+        fs: false,
+        net: false,
+        tls: false,
+      };
+    }
+    return config;
+  },
 }
 
 module.exports = nextConfig 
